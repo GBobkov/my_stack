@@ -81,14 +81,13 @@ void Do_Stack_Destroy(STACK* stack, const char* name, const char* file, const ch
 
 unsigned Do_Stack_Push(STACK* stack, ELEMENT_TYPE new_element)
 {
-    ON_DEBUG(if (Stack_Assert(stack)) return stack->errors;)
+    
     Stack_Realloc_Increase(stack);
     if (stack->errors)
         return stack->errors;
     stack->data[stack->size - 1] = new_element;
     Update_Hashsums(stack);
     
-    ON_DEBUG(if (Stack_Assert(stack)) return stack->errors;)
     return Stack_Error(stack);
 }
 
