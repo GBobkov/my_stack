@@ -1,6 +1,6 @@
 #include "stack_check.h"
 
-extern const ELEMENT_TYPE POIZON_VALUE = 1917;
+
 
 
 #ifdef DEBUG  
@@ -8,6 +8,7 @@ extern const ELEMENT_TYPE POIZON_VALUE = 1917;
 #include <stdio.h>
 #include <stdlib.h>
 
+const ELEMENT_TYPE POIZON_VALUE = 1917;
 const CANARY_t LST_CNR = 1111;
 const CANARY_t RST_CNR = 1112;
 const CANARY_t LDT_CNR = 1113;

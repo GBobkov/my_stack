@@ -5,8 +5,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-
-extern ELEMENT_TYPE POIZON_VALUE;
+ON_DEBUG(extern ELEMENT_TYPE POIZON_VALUE;)
 
 const size_t ELEMENTARY_CAPACITY = 4;
 const int MEMORY_INCREASE_COEFFICIENT=2;
@@ -110,16 +109,22 @@ ELEMENT_TYPE Do_Stack_Pop(STACK* stack)
 
     ON_DEBUG(if (Stack_Assert(stack)) return stack->errors;)
     if (stack->size <= 0)
-        return POIZON_VALUE;
-    
+    {
+        ON_DEBUG(return POIZON_VALUE;)
+        return 0;
+    }
+
     ELEMENT_TYPE value_return = stack->data[stack->size - 1];
     
     if (Stack_Realloc_Desrease(stack))
-        return POIZON_VALUE;
+    {
+        ON_DEBUG(return POIZON_VALUE;)
+        return 0;
+    }
     ON_DEBUG
     (
-    Update_Hashsums(stack);
-    if (Stack_Assert(stack)) return POIZON_VALUE;
+        Update_Hashsums(stack);
+        if (Stack_Assert(stack)) return POIZON_VALUE;
     )
     return value_return;
 }
