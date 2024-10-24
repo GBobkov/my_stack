@@ -43,9 +43,9 @@ void Fill_Poizon(STACK *stack)
 }
 
 
-unsigned Stack_Error(STACK* stack)
+long long Stack_Error(STACK* stack)
 {
-    unsigned errors = 0;
+    long long errors = 0;
     if (!stack) return NULL_STACK_PTR;
     if (stack->size < 0) errors |= NEGATIVE_SIZE;
     if (stack->capacity < 0) errors |= NEGATIVE_CAPACITY;
@@ -57,9 +57,8 @@ unsigned Stack_Error(STACK* stack)
 }
 
 
-int Do_Stack_Assert(STACK *stack, const char* file, const char* func, const int line)
+long long int Do_Stack_Assert(STACK *stack, const char* file, const char* func, const int line)
 {
-    int i = 0;
     if (!stack)
     {
         printf("NULL_STACK_PTR in %s:%d(%s)", file, line, func);
@@ -88,10 +87,10 @@ void Do_Stack_Dump(STACK* stack, const char* file, const char* func, const int l
     printf("\tname=\"%s\" initializated at %s:%d(%s)\n", stack->name, stack->file, stack->line, stack->func);
     printf("\tcalled from %s:%d(%s)" ANSI_RESET_COLOR, file, line, func);
     Printf_Errors(stack->errors);
-    printf("capacity=%u\nsize=%u\n", stack->capacity, stack->size);
-    printf("leftst_canary=%d\nrightst_canary=%d\n", stack->left_canary, stack->right_canary);
-    printf("leftdt_canaty=%d\nrightdt_canary=%d\n", *Calcualte_LDT_CANARY_ptr(stack), *Calcualte_RDT_CANARY_ptr(stack));
-    printf("struct_hashsum=%d\ndata_hashsum=%d\n", stack->struct_hashsum, stack->data_hashsum);
+    printf("capacity=%ld\nsize=%ld\n", stack->capacity, stack->size);
+    printf("leftst_canary=%lld\nrightst_canary=%lld\n", stack->left_canary, stack->right_canary);
+    printf("leftdt_canaty=%lld\nrightdt_canary=%lld\n", *Calcualte_LDT_CANARY_ptr(stack), *Calcualte_RDT_CANARY_ptr(stack));
+    printf("struct_hashsum=%lld\ndata_hashsum=%lld\n", stack->struct_hashsum, stack->data_hashsum);
     printf(ANSI_YELLOW "data[%p]:" ANSI_RESET_COLOR, stack->data);
     if (!stack->data)
     {
@@ -99,7 +98,7 @@ void Do_Stack_Dump(STACK* stack, const char* file, const char* func, const int l
         printf(END_LINE);
         return;
     }
-    printf(ANSI_BLACK " []=%ld(ldt_canary)" ANSI_RESET_COLOR, *Calcualte_LDT_CANARY_ptr(stack));
+    printf(ANSI_BLACK " []=%lld(ldt_canary)" ANSI_RESET_COLOR, *Calcualte_LDT_CANARY_ptr(stack));
     for (int i = 0; i < (int)stack->capacity ; i++)
     {
         if (0 <= i && i < stack->size)
@@ -112,13 +111,13 @@ void Do_Stack_Dump(STACK* stack, const char* file, const char* func, const int l
 
         printf(ANSI_RESET_COLOR);
     }
-    printf(ANSI_BLACK " []=%ld(ldt_canary)" ANSI_RESET_COLOR, *Calcualte_RDT_CANARY_ptr(stack));
+    printf(ANSI_BLACK " []=%lld(ldt_canary)" ANSI_RESET_COLOR, *Calcualte_RDT_CANARY_ptr(stack));
     if (!stack->capacity) printf(ANSI_RED "Stack is empty." ANSI_RESET_COLOR);
     printf(END_LINE);
 }
 
 
-void Printf_Errors(int problem)
+void Printf_Errors(long long  problem)
 {
 
     if (problem == 0)
@@ -178,12 +177,11 @@ long long int Check_Damage(STACK* stack)
 uint64_t Calculate_HashSum(const char* start_byte, size_t size)
 {
     uint64_t hashsum = 5381;
-    if (size >= 0)
+    for (size_t i = 0; i < size; i++)
+        hashsum = (hashsum * 31) ^ start_byte[i];
+    /*else
         for (size_t i = 0; i < size; i++)
-            hashsum = (hashsum * 31) ^ start_byte[i];
-    else
-        for (size_t i = 0; i < size; i++)
-            hashsum = (hashsum * 31) ^ start_byte[i];
+            hashsum = (hashsum * 31) ^ start_byte[i];*/
 
     return hashsum;
 }

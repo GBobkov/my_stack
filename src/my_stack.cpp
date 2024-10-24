@@ -1,6 +1,6 @@
 #include "my_stack.h"
-#include "colors.h"
 #include "stack_check.h"
+#include "colors.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -14,11 +14,11 @@ static const int PUSH_ELEMENT_MODE= 1;
 static const int POP_ELEMENT_MODE =2;
 
 
-unsigned Stack_Realloc_Increase(STACK* stack);
-unsigned Stack_Realloc_Desrease(STACK* stack);
+long long  Stack_Realloc_Increase(STACK* stack);
+long long  Stack_Realloc_Desrease(STACK* stack);
 
 
-void Do_Stack_Init(STACK *stack, size_t capacity, const char* name, const char* file, const char* func, const int line) 
+void Do_Stack_Init(STACK *stack, long int capacity, const char* name, const char* file, const char* func, const int line) 
 {  
     
     if (!stack)
@@ -57,7 +57,7 @@ void Do_Stack_Init(STACK *stack, size_t capacity, const char* name, const char* 
         Stack_Error(stack);
         if (stack->errors != NULL_DATA_PTR && stack->errors != NO_ERROR)
             {
-                printf(ANSI_RED "%s:%d(%s) problems with construct. Errors=%d" ANSI_RESET_COLOR, file, line, func, stack->errors);
+                printf(ANSI_RED "%s:%d(%s) problems with construct. Errors=%lld" ANSI_RESET_COLOR, file, line, func, stack->errors);
                 Do_Stack_Dump(stack, file, func, line);
                 Do_Stack_Destroy(stack, name, file, func, line);
                 return;
@@ -83,7 +83,7 @@ void Do_Stack_Destroy(STACK* stack, const char* name, const char* file, const ch
 }
 
 
-unsigned Do_Stack_Push(STACK* stack, ELEMENT_TYPE new_element)
+long long int Do_Stack_Push(STACK* stack, ELEMENT_TYPE new_element)
 {
     ON_DEBUG(if(Stack_Assert(stack)) return stack->errors;)
 
@@ -107,7 +107,7 @@ unsigned Do_Stack_Push(STACK* stack, ELEMENT_TYPE new_element)
 ELEMENT_TYPE Do_Stack_Pop(STACK* stack)
 {   
 
-    ON_DEBUG(if (Stack_Assert(stack)) return stack->errors;)
+    ON_DEBUG(if (Stack_Assert(stack)) return (ELEMENT_TYPE) stack->errors;)
     if (stack->size <= 0)
     {
         ON_DEBUG(return POIZON_VALUE;)
@@ -130,7 +130,7 @@ ELEMENT_TYPE Do_Stack_Pop(STACK* stack)
 }
 
 
-unsigned Stack_Realloc_Increase(STACK* stack) 
+long long Stack_Realloc_Increase(STACK* stack) 
 {
     ON_DEBUG(if (Stack_Assert(stack)) return stack->errors;)
     stack->size += 1;
@@ -163,7 +163,7 @@ unsigned Stack_Realloc_Increase(STACK* stack)
 }
 
 
-unsigned Stack_Realloc_Desrease(STACK* stack)
+long long Stack_Realloc_Desrease(STACK* stack)
 {
     ON_DEBUG(if (Stack_Assert(stack)) return stack->errors;)
     stack->size -= 1;

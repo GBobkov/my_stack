@@ -27,7 +27,7 @@ struct STACK
 
     ON_DEBUG
     (
-        unsigned errors;
+        long long errors;
         const char* name;
         const char* file;
         const char* func;
