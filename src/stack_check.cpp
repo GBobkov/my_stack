@@ -8,11 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const ELEMENT_TYPE POIZON_VALUE = 1917;
-const CANARY_t LST_CNR = 1111;
-const CANARY_t RST_CNR = 1112;
-const CANARY_t LDT_CNR = 1113;
-const CANARY_t RDT_CNR = 1114;
 
 uint64_t Calculate_HashSum(const char* start_byte, size_t size);
 long long int Check_HashSum(STACK* stack);

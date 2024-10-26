@@ -12,6 +12,8 @@ typedef long long int CANARY_t;
 
 
 
+
+
 struct STACK 
 {
     ON_DEBUG
@@ -53,5 +55,10 @@ enum STACK_ERROR_FLAG{
     UNPREDICTABLE_POIZON=1<<11
 };
 
+static const ELEMENT_TYPE POIZON_VALUE = 1917;
+static const CANARY_t LST_CNR = 1111;
+static const CANARY_t RST_CNR = 1112;
+static const CANARY_t LDT_CNR = 1113;
+static const CANARY_t RDT_CNR = 1114;
 
 #endif

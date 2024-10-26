@@ -5,7 +5,13 @@
 #include <stdlib.h>
 #include <assert.h>
 
-ON_DEBUG(extern ELEMENT_TYPE POIZON_VALUE;)
+// ON_DEBUG(extern ELEMENT_TYPE POIZON_VALUE;
+//         extern const CANARY_t LST_CNR;
+//         extern const CANARY_t RST_CNR;
+//         extern const CANARY_t LDT_CNR;
+//         extern const CANARY_t RDT_CNR;)
+
+
 
 const size_t ELEMENTARY_CAPACITY = 4;
 const int MEMORY_INCREASE_COEFFICIENT=2;
@@ -35,10 +41,6 @@ void Do_Stack_Init(STACK *stack, long int capacity, const char* name, const char
 
     ON_DEBUG
     (
-        extern const CANARY_t LST_CNR;
-        extern const CANARY_t RST_CNR;
-        extern const CANARY_t LDT_CNR;
-        extern const CANARY_t RDT_CNR;
 
         stack->name=name;
         stack->file=file;
@@ -91,7 +93,7 @@ long long int Do_Stack_Push(STACK* stack, ELEMENT_TYPE new_element)
 
 
     stack->data[stack->size - 1] = new_element;
-
+    //Do_Stack_Dump(stack, __FILE__, __FUNCTION__, __LINE__);
     ON_DEBUG
     (
         Update_Hashsums(stack);
@@ -150,8 +152,6 @@ long long Stack_Realloc_Increase(STACK* stack)
             ON_DEBUG
             (
             
-            extern const CANARY_t LDT_CNR;
-            extern const CANARY_t RDT_CNR;
             ((CANARY_t *)stack->data)[0] = LDT_CNR;
             stack->data = (ELEMENT_TYPE *)((char *)stack->data + sizeof(CANARY_t));
             *(CANARY_t *)((char *)stack->data + Calculate_Correct_Data_Size(stack->capacity, sizeof(ELEMENT_TYPE))) = RDT_CNR;
@@ -167,7 +167,7 @@ long long Stack_Realloc_Desrease(STACK* stack)
 {
     ON_DEBUG(if (Stack_Assert(stack)) return stack->errors;)
     stack->size -= 1;
-    if (stack->size * MEMORY_INCREASE_COEFFICIENT * MEMORY_INCREASE_COEFFICIENT <= stack->capacity)
+    if (stack->size * MEMORY_INCREASE_COEFFICIENT * MEMORY_INCREASE_COEFFICIENT <= stack->capacity || stack->size == 0)
     {
         stack->capacity /= MEMORY_DECREASE_COEFFICIENT;     
         ON_DEBUG(if (stack->data)
@@ -177,14 +177,11 @@ long long Stack_Realloc_Desrease(STACK* stack)
         
         ON_DEBUG
         (
-        extern const CANARY_t LDT_CNR;
-        extern const CANARY_t RDT_CNR;
         ((CANARY_t *)stack->data)[0] = LDT_CNR;
         stack->data = (ELEMENT_TYPE *)((char *)stack->data + sizeof(CANARY_t));
         *(CANARY_t *)((char *)stack->data + Calculate_Correct_Data_Size(stack->capacity, sizeof(ELEMENT_TYPE))) = RDT_CNR;
         )
     }
-    
     if (!stack->data) return NULL_DATA_PTR;
     ON_DEBUG(Fill_Poizon(stack);)
     return NO_ERROR;
