@@ -20,8 +20,61 @@ static const int PUSH_ELEMENT_MODE= 1;
 static const int POP_ELEMENT_MODE =2;
 
 
-long long  Stack_Realloc_Increase(STACK* stack);
-long long  Stack_Realloc_Desrease(STACK* stack);
+
+static long long Stack_Realloc_Increase(STACK* stack) 
+{
+    ON_DEBUG(if (Stack_Assert(stack)) return stack->errors;)
+    stack->size += 1;
+    if (stack->size > stack->capacity)
+        {
+            if (stack->capacity)
+                stack->capacity *= MEMORY_INCREASE_COEFFICIENT;
+            else
+                stack->capacity = ELEMENTARY_CAPACITY;
+                
+            ON_DEBUG
+            (if (stack->data)
+                stack->data = (ELEMENT_TYPE *)((char *)stack->data - sizeof(CANARY_t));)
+
+            stack->data = (ELEMENT_TYPE *) realloc((void *) stack->data, stack->capacity * sizeof(ELEMENT_TYPE) ON_DEBUG(+ 2 * (sizeof(CANARY_t)) + 7));
+            
+            ON_DEBUG
+            (
+            
+            ((CANARY_t *)stack->data)[0] = LDT_CNR;
+            stack->data = (ELEMENT_TYPE *)((char *)stack->data + sizeof(CANARY_t));
+            *(CANARY_t *)((char *)stack->data + Calculate_Correct_Data_Size(stack->capacity, sizeof(ELEMENT_TYPE))) = RDT_CNR;
+            )
+        }
+    if (!stack->data) return NULL_DATA_PTR;
+    ON_DEBUG(Fill_Poizon(stack);)
+    return NO_ERROR;
+}
+
+
+static long long Stack_Realloc_Desrease(STACK* stack)
+{
+    ON_DEBUG(if (Stack_Assert(stack)) return stack->errors;)
+    stack->size -= 1;
+    if (stack->size * MEMORY_INCREASE_COEFFICIENT * MEMORY_INCREASE_COEFFICIENT <= stack->capacity || stack->size == 0)
+    {
+        stack->capacity /= MEMORY_DECREASE_COEFFICIENT;     
+        ON_DEBUG(if (stack->data)
+            stack->data = (ELEMENT_TYPE *)((char *)stack->data - sizeof(CANARY_t));)
+
+        stack->data = (ELEMENT_TYPE *) realloc((void *) stack->data, stack->capacity * sizeof(ELEMENT_TYPE) ON_DEBUG(+ 2 * (sizeof(CANARY_t)) + 7));
+        
+        ON_DEBUG
+        (
+        ((CANARY_t *)stack->data)[0] = LDT_CNR;
+        stack->data = (ELEMENT_TYPE *)((char *)stack->data + sizeof(CANARY_t));
+        *(CANARY_t *)((char *)stack->data + Calculate_Correct_Data_Size(stack->capacity, sizeof(ELEMENT_TYPE))) = RDT_CNR;
+        )
+    }
+    if (!stack->data) return NULL_DATA_PTR;
+    ON_DEBUG(Fill_Poizon(stack);)
+    return NO_ERROR;
+}
 
 
 void Do_Stack_Init(STACK *stack, long int capacity, const char* name, const char* file, const char* func, const int line) 
@@ -131,58 +184,3 @@ ELEMENT_TYPE Do_Stack_Pop(STACK* stack)
     return value_return;
 }
 
-
-long long Stack_Realloc_Increase(STACK* stack) 
-{
-    ON_DEBUG(if (Stack_Assert(stack)) return stack->errors;)
-    stack->size += 1;
-    if (stack->size > stack->capacity)
-        {
-            if (stack->capacity)
-                stack->capacity *= MEMORY_INCREASE_COEFFICIENT;
-            else
-                stack->capacity = ELEMENTARY_CAPACITY;
-                
-            ON_DEBUG
-            (if (stack->data)
-                stack->data = (ELEMENT_TYPE *)((char *)stack->data - sizeof(CANARY_t));)
-
-            stack->data = (ELEMENT_TYPE *) realloc((void *) stack->data, stack->capacity * sizeof(ELEMENT_TYPE) ON_DEBUG(+ 2 * (sizeof(CANARY_t)) + 7));
-            
-            ON_DEBUG
-            (
-            
-            ((CANARY_t *)stack->data)[0] = LDT_CNR;
-            stack->data = (ELEMENT_TYPE *)((char *)stack->data + sizeof(CANARY_t));
-            *(CANARY_t *)((char *)stack->data + Calculate_Correct_Data_Size(stack->capacity, sizeof(ELEMENT_TYPE))) = RDT_CNR;
-            )
-        }
-    if (!stack->data) return NULL_DATA_PTR;
-    ON_DEBUG(Fill_Poizon(stack);)
-    return NO_ERROR;
-}
-
-
-long long Stack_Realloc_Desrease(STACK* stack)
-{
-    ON_DEBUG(if (Stack_Assert(stack)) return stack->errors;)
-    stack->size -= 1;
-    if (stack->size * MEMORY_INCREASE_COEFFICIENT * MEMORY_INCREASE_COEFFICIENT <= stack->capacity || stack->size == 0)
-    {
-        stack->capacity /= MEMORY_DECREASE_COEFFICIENT;     
-        ON_DEBUG(if (stack->data)
-            stack->data = (ELEMENT_TYPE *)((char *)stack->data - sizeof(CANARY_t));)
-
-        stack->data = (ELEMENT_TYPE *) realloc((void *) stack->data, stack->capacity * sizeof(ELEMENT_TYPE) ON_DEBUG(+ 2 * (sizeof(CANARY_t)) + 7));
-        
-        ON_DEBUG
-        (
-        ((CANARY_t *)stack->data)[0] = LDT_CNR;
-        stack->data = (ELEMENT_TYPE *)((char *)stack->data + sizeof(CANARY_t));
-        *(CANARY_t *)((char *)stack->data + Calculate_Correct_Data_Size(stack->capacity, sizeof(ELEMENT_TYPE))) = RDT_CNR;
-        )
-    }
-    if (!stack->data) return NULL_DATA_PTR;
-    ON_DEBUG(Fill_Poizon(stack);)
-    return NO_ERROR;
-}
